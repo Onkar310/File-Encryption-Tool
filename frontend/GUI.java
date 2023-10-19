@@ -103,7 +103,11 @@ public class GUI {
                 File selectedFile = fileChooser.getSelectedFile();
                 if (selectedFile != null) {
                     progressBar.setVisible(true);
-                    encryptFileOrFolder(selectedFile, secretKey);
+                    try {
+                        encryptFileOrFolder(selectedFile, secretKey);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
@@ -114,7 +118,11 @@ public class GUI {
                 File selectedFile = fileChooser.getSelectedFile();
                 if (selectedFile != null) {
                     progressBar.setVisible(true);
-                    decryptFileOrFolder(selectedFile, secretKey);
+                    try {
+                        decryptFileOrFolder(selectedFile, secretKey);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
@@ -127,12 +135,17 @@ public class GUI {
         decryptButton.setEnabled(enable);
     }
 
-    private void encryptFileOrFolder(File file, SecretKey key) {
+    private void encryptFileOrFolder(File file, SecretKey key) throws Exception {
         if (file.isFile()) {
 
             encryptFile(file, key);
+
             System.out.println(file.getAbsolutePath());
         } else if (file.isDirectory()) {
+            encrypt.encryptDirectory(file);
+            JOptionPane.showMessageDialog(frame, "Directory encrypted successfully", "Encryption",
+                    JOptionPane.INFORMATION_MESSAGE);
+            System.out.println(file.getAbsolutePath());
 
         }
     }
@@ -151,13 +164,15 @@ public class GUI {
         }
     }
 
-    private void decryptFileOrFolder(File file, SecretKey key) {
+    private void decryptFileOrFolder(File file, SecretKey key) throws Exception {
         if (file.isFile()) {
 
             decryptFile(file, key);
             System.out.println(file.getAbsolutePath());
         } else if (file.isDirectory()) {
-
+            decrypt.decryptDirectory(file);
+            JOptionPane.showMessageDialog(frame, "Directory decrypted successfully", "Encryption",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -165,7 +180,6 @@ public class GUI {
         try {
 
             decrypt.decryptFile(file);
-
             JOptionPane.showMessageDialog(frame, "File decrypted successfully", "Decryption",
                     JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {

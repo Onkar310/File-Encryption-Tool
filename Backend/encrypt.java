@@ -37,4 +37,40 @@ public class encrypt {
             e.printStackTrace();
         }
     }
+
+    public static String encryptDirectory(File directory)
+            throws Exception {
+        File[] files = directory.listFiles();
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                encryptDirectory(file); // Recursively encrypt subdirectories
+            } else {
+                try {
+
+                    Cipher cipher = Cipher.getInstance("AES");
+                    SecretKey key = Key.loadKeyFromPEM();
+                    cipher.init(Cipher.ENCRYPT_MODE, key);
+
+                    FileInputStream fileInputStream = new FileInputStream(file);
+
+                    FileOutputStream encryptedOutputStream = new FileOutputStream(file.getAbsolutePath() + ".enc");
+
+                    CipherOutputStream cipherOutputStream = new CipherOutputStream(encryptedOutputStream, cipher);
+
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                        cipherOutputStream.write(buffer, 0, bytesRead);
+                    }
+                    cipherOutputStream.close();
+
+                    fileInputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "done encrypting";
+    }
 }
